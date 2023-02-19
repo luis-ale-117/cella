@@ -13,6 +13,9 @@ type Grid struct {
 
 // NewGrid creates a new grid
 func NewGrid(Width, Height int) *Grid {
+	if Width <= 0 || Height <= 0 {
+		return nil
+	}
 	g := new(Grid)
 	g.Width = Width
 	g.Height = Height
@@ -115,7 +118,7 @@ func (g *Grid) GetAuxBorderDown() []Cell {
 	return bd
 }
 
-// GetNeighbours gets the neighbours of a cell and copies them to the neighbours slice
+// GetNeighbours gets the neighbours of a cell and copies them to the neighbours grid
 func (g *Grid) GetNeighbourhood(x, y int, neighbours [][]Cell) {
 	x = x + 1
 	y = y + 1
@@ -128,4 +131,19 @@ func (g *Grid) GetNeighbourhood(x, y int, neighbours [][]Cell) {
 	neighbours[2][0] = g.WholeGrid[y+1][x-1]
 	neighbours[2][1] = g.WholeGrid[y+1][x]
 	neighbours[2][2] = g.WholeGrid[y+1][x+1]
+}
+
+// Compare two grids
+func EqualsGrid(a, b *Grid) bool {
+	if a.Width != b.Width || a.Height != b.Height {
+		return false
+	}
+	for y := 0; y < a.Height; y++ {
+		for x := 0; x < a.Width; x++ {
+			if a.GetCell(x, y) != b.GetCell(x, y) {
+				return false
+			}
+		}
+	}
+	return true
 }

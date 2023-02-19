@@ -15,6 +15,9 @@ type Cella2d struct {
 
 // NewCella2d creates a new cellular automaton 2D
 func NewCella2d(Width, Height, numStates int) *Cella2d {
+	if Width <= 0 || Height <= 0 || numStates < 2 {
+		return nil
+	}
 	c := new(Cella2d)
 	c.Width = Width
 	c.Height = Height

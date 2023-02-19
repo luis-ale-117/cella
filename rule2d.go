@@ -12,6 +12,7 @@ type Rule2d struct {
 	condition     string                 // Condition to change state
 	state         Cell                   // State to change to
 	neighbourhood map[string]interface{} // Neighbourhood values used in the condition (neighbours states and total cells in each state)
+	eval          *goval.Evaluator       // Evaluator for the condition
 }
 
 // New creates a new rule by setting the condition and the state
@@ -21,12 +22,14 @@ func NewRule2d(condition string, state Cell, numStates int) *Rule2d {
 	r.condition = condition
 	r.state = state
 	r.neighbourhood = make(map[string]interface{})
+	r.eval = goval.NewEvaluator()
 	r.initNeighbourhood(numStates)
 	return r
 }
 
-// InitNeighbourhood initializes the neighbourhood used in the condition.
+// initNeighbourhood initializes the neighbourhood used in the condition.
 // Given the number of states, it will create a variable for each state (s0, s1, ...)
+// and a variable for each cell in the neighbourhood (n00, n01, n02, n10, n11, n12, n20, n21, n22)
 func (r *Rule2d) initNeighbourhood(numStates int) {
 	for i := 0; i < numStates; i++ {
 		stateName := fmt.Sprintf("s%d", i)
@@ -80,10 +83,13 @@ func (r *Rule2d) GetState() Cell {
 
 // CheckCondition checks if the condition is true
 func (r *Rule2d) CheckCondition() (bool, error) {
-	eval := goval.NewEvaluator()
-	res, err := eval.Evaluate(r.condition, r.neighbourhood, nil)
+	res, err := r.eval.Evaluate(r.condition, r.neighbourhood, nil)
 	if err != nil {
 		return false, err
 	}
-	return res.(bool), nil
+	v, ok := res.(bool)
+	if !ok {
+		return false, fmt.Errorf("condition {%s} did not return a boolean", r.condition)
+	}
+	return v, nil
 }
