@@ -89,10 +89,10 @@ func TestSetAuxBordersAsToroidal(t *testing.T) {
 	}
 	for i := 0; i < len(auxLeft); i++ {
 		if auxRight[i] != auxRightCheck[i] {
-			t.Fatalf("Aux border right is not correct on index %d value %v", i, auxRight[i])
+			t.Fatalf("Aux border right is not correct on index %d value %v", i, auxRight)
 		}
 		if auxLeft[i] != auxLeftCheck[i] {
-			t.Fatalf("Aux border left is not correct on index %d value %v", i, auxLeft[i])
+			t.Fatalf("Aux border left is not correct on index %d value %v", i, auxLeft)
 		}
 	}
 }
