@@ -81,6 +81,11 @@ func (r *Rule2d) GetState() Cell {
 	return r.state
 }
 
+// GetCondition returns the condition used to change the state
+func (r *Rule2d) GetCondition() string {
+	return r.condition
+}
+
 // CheckCondition checks if the condition is true
 func (r *Rule2d) CheckCondition() (bool, error) {
 	res, err := r.eval.Evaluate(r.condition, r.neighbourhood, nil)
