@@ -90,7 +90,7 @@ func (g *Grid) GetAuxBorderLeft() []Cell {
 
 // GetAuxBorderRigth gets a rigth auxiliar border of the grid
 // used for the evaluation of the rules
-func (g *Grid) GetAuxBorderRigth() []Cell {
+func (g *Grid) GetAuxBorderRight() []Cell {
 	br := make([]Cell, g.Height+2)
 	for i := range br {
 		br[i] = g.WholeGrid[i][g.Width+1]

@@ -8,6 +8,7 @@ type Cella2d struct {
 	Width         int       // Width of the grid
 	Height        int       // Height of the grid
 	Rules         []*Rule2d // Rules of the automaton
+	NumStates     int       // Number of states of the automaton
 	States        []Cell    // States of the automaton
 	CellsPerState []int     // Number of cells per state
 	Generation    int       // Generation of the automaton
@@ -24,6 +25,7 @@ func NewCella2d(Width, Height, numStates int) *Cella2d {
 	c.InitGrid = nil
 	c.NextGrid = nil
 	c.Generation = 0
+	c.NumStates = numStates
 	c.States = make([]Cell, numStates)
 	c.CellsPerState = make([]int, numStates)
 	return c
@@ -103,6 +105,44 @@ func (c *Cella2d) CountCellsPerState() {
 			c.CellsPerState[state]++
 		}
 	}
+}
+
+// SetAuxBordersAsToroidal sets auxiliar borders with values as if the Grid of
+// cells had a toroidal shape
+func (c *Cella2d) SetAuxBordersAsToroidal() {
+	// Set auxiliar borders to CA as a toroidal grid
+	auxUp := make([]Cell, c.Width+2)
+	auxDown := make([]Cell, c.Width+2)
+	auxLeft := make([]Cell, c.Height+2)
+	auxRight := make([]Cell, c.Height+2)
+
+	for i := 0; i < c.Width; i++ {
+		auxUp[i+1] = c.InitGrid.GetCell(i, c.Width-1)
+		auxDown[i+1] = c.InitGrid.GetCell(i, 0)
+	}
+	for i := 0; i < c.Height; i++ {
+		auxLeft[i+1] = c.InitGrid.GetCell(c.Width-1, i)
+		auxRight[i+1] = c.InitGrid.GetCell(0, i)
+	}
+
+	// Set corners
+	auxUp[0] = c.InitGrid.GetCell(c.Width-1, c.Height-1)
+	auxUp[c.Width+1] = c.InitGrid.GetCell(0, c.Height-1)
+
+	auxDown[0] = c.InitGrid.GetCell(c.Width-1, 0)
+	auxDown[c.Width+1] = c.InitGrid.GetCell(0, 0)
+
+	auxLeft[0] = c.InitGrid.GetCell(c.Width-1, c.Height-1)
+	auxLeft[c.Width+1] = c.InitGrid.GetCell(c.Width-1, 0)
+
+	auxRight[0] = c.InitGrid.GetCell(0, c.Height-1)
+	auxRight[c.Width+1] = c.InitGrid.GetCell(0, 0)
+
+	// Set auxiliar borders
+	c.InitGrid.SetAuxBorderUp(auxUp)
+	c.InitGrid.SetAuxBorderDown(auxDown)
+	c.InitGrid.SetAuxBorderLeft(auxLeft)
+	c.InitGrid.SetAuxBorderRight(auxRight)
 }
 
 // NextGeneration calculates the next generation of a cell in the automaton
