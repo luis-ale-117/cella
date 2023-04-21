@@ -97,6 +97,70 @@ func TestSetAuxBordersAsToroidal(t *testing.T) {
 	}
 }
 
+func TestSetAuxBordersAsToroidalRectangular(t *testing.T) {
+	numStates := 2
+	dead := Cell(0)
+	alive := Cell(1)
+	ca := NewCella2d(4, 5, numStates)
+	initGrid := NewGrid(4, 5)
+	nextGrid := NewGrid(4, 5)
+	ca.SetInitGrid(initGrid)
+	ca.SetNextGrid(nextGrid)
+	// s0 = dead, s1 = alive
+	// n11 = current cell
+	// If a cell is alive and has 2 or 3 neighbors, it remains alive (survives)
+	r1 := NewRule2d("n11 == 1 && (s1 == 2 || s1 == 3)", alive, numStates)
+	// If a cell is dead and has 3 neighbors, it becomes alive (reproduction)
+	r2 := NewRule2d("n11 == 0 && s1 == 3", alive, numStates)
+	// All other cells die or stay dead (underpopulation or overpopulation)
+	r3 := NewRule2d("0==0", dead, numStates)
+	ca.SetRules([]*Rule2d{r1, r2, r3})
+
+	// Game of life with block still life
+	ca.InitGrid.SetCell(0, 1, alive)
+	ca.InitGrid.SetCell(1, 1, alive)
+	ca.InitGrid.SetCell(0, 2, alive)
+	ca.InitGrid.SetCell(1, 2, alive)
+	ca.InitGrid.SetCell(3, 0, alive)
+	ca.InitGrid.SetCell(3, 4, alive)
+	// 1   0 0 0 1    0
+	//    __________
+	// 1 | 0 0 0 1 |  0
+	// 0 | 1 1 0 0 |  1
+	// 0 | 1 1 0 0 |  1
+	// 0 | 0 0 0 0 |  0
+	// 1 | 0 0 0 1 |  0
+	//   ----------
+	// 1   0 0 0 1    0
+	ca.SetAuxBordersAsToroidal()
+	auxUp := ca.InitGrid.GetAuxBorderUp()
+	auxDown := ca.InitGrid.GetAuxBorderDown()
+	auxLeft := ca.InitGrid.GetAuxBorderLeft()
+	auxRight := ca.InitGrid.GetAuxBorderRight()
+
+	auxUpCheck := []Cell{alive, dead, dead, dead, alive, dead}
+	auxDownCheck := []Cell{alive, dead, dead, dead, alive, dead}
+	auxLeftCheck := []Cell{alive, alive, dead, dead, dead, alive, alive}
+	auxRightCheck := []Cell{dead, dead, alive, alive, dead, dead, dead}
+
+	for i := 0; i < len(auxUp); i++ {
+		if auxDown[i] != auxDownCheck[i] {
+			t.Fatalf("Aux border down is not correct on index %d value %v", i, auxDown)
+		}
+		if auxUp[i] != auxUpCheck[i] {
+			t.Fatalf("Aux border up is not correct on index %d value %v", i, auxUp)
+		}
+	}
+	for i := 0; i < len(auxLeft); i++ {
+		if auxRight[i] != auxRightCheck[i] {
+			t.Fatalf("Aux border right is not correct on index %d value %v", i, auxRight)
+		}
+		if auxLeft[i] != auxLeftCheck[i] {
+			t.Fatalf("Aux border left is not correct on index %d value %v", i, auxLeft)
+		}
+	}
+}
+
 func TestGameOfLifeAllDeadCells(t *testing.T) {
 	numStates := 2
 	dead := Cell(0)

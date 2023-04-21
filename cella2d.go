@@ -117,7 +117,7 @@ func (c *Cella2d) SetAuxBordersAsToroidal() {
 	auxRight := make([]Cell, c.Height+2)
 
 	for i := 0; i < c.Width; i++ {
-		auxUp[i+1] = c.InitGrid.GetCell(i, c.Width-1)
+		auxUp[i+1] = c.InitGrid.GetCell(i, c.Height-1)
 		auxDown[i+1] = c.InitGrid.GetCell(i, 0)
 	}
 	for i := 0; i < c.Height; i++ {
@@ -133,10 +133,10 @@ func (c *Cella2d) SetAuxBordersAsToroidal() {
 	auxDown[c.Width+1] = c.InitGrid.GetCell(0, 0)
 
 	auxLeft[0] = c.InitGrid.GetCell(c.Width-1, c.Height-1)
-	auxLeft[c.Width+1] = c.InitGrid.GetCell(c.Width-1, 0)
+	auxLeft[c.Height+1] = c.InitGrid.GetCell(c.Width-1, 0)
 
 	auxRight[0] = c.InitGrid.GetCell(0, c.Height-1)
-	auxRight[c.Width+1] = c.InitGrid.GetCell(0, 0)
+	auxRight[c.Height+1] = c.InitGrid.GetCell(0, 0)
 
 	// Set auxiliar borders
 	c.InitGrid.SetAuxBorderUp(auxUp)
